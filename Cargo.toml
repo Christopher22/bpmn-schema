@@ -1,0 +1,15 @@
+[package]
+name = "bpmn-schema"
+version = "0.1.0"
+edition = "2024"
+build = "build.rs"
+readme = "README.md"
+keywords = ["bpmn"]
+license = "MIT"
+
+[dependencies]
+xsd-parser-types = { version = "0.1.2", default-features = false, features = ["xml", "num", "quick-xml"]}
+num = "0.4"
+
+[build-dependencies]
+xsd-parser = { version = "1.4", default-features = false, features = ["num"] }
