@@ -10,6 +10,7 @@ license = "MIT"
 [dependencies]
 xsd-parser-types = { version = "0.1.2", default-features = false, features = ["xml", "num", "quick-xml"]}
 num = "0.4"
+quick-xml = { version = "0.38" }
 
 [build-dependencies]
 xsd-parser = { version = "1.4", default-features = false, features = ["num"] }

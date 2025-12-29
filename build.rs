@@ -27,6 +27,7 @@ fn main() -> Result<(), Error> {
         RenderStep::Types,
         RenderStep::Defaults,
         RenderStep::NamespaceConstants,
+        RenderStep::PrefixConstants,
         RenderStep::QuickXmlDeserialize {
             boxed_deserializer: false,
         },
@@ -39,9 +40,49 @@ fn main() -> Result<(), Error> {
     // Generate the code based on the configuration above.
     let code = generate(config)?;
     let code = code.to_string();
+    let code = rustfmt_pretty_print(code)?;
 
     let mut file = File::create(PathBuf::from(env::var("OUT_DIR").unwrap()).join("schema.rs"))?;
     file.write_all(code.to_string().as_bytes())?;
 
     Ok(())
+}
+
+pub fn rustfmt_pretty_print(code: String) -> Result<String, Error> {
+    let mut child = std::process::Command::new("rustfmt")
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
+        .spawn()?;
+
+    let mut stdin = child.stdin.take().unwrap();
+
+    write!(stdin, "{code}")?;
+    stdin.flush()?;
+    drop(stdin);
+
+    let std::process::Output {
+        status,
+        stdout,
+        stderr,
+    } = child.wait_with_output()?;
+
+    let stdout = String::from_utf8_lossy(&stdout);
+    let stderr = String::from_utf8_lossy(&stderr);
+
+    if !status.success() {
+        let code = status.code();
+        match code {
+            Some(code) => {
+                if code != 0 {
+                    panic!("The `rustfmt` command failed with return code {code}!\n{stderr}");
+                }
+            }
+            None => {
+                panic!("The `rustfmt` command failed!\n{stderr}")
+            }
+        }
+    }
+
+    Ok(stdout.into())
 }
