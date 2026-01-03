@@ -1,6 +1,6 @@
 [package]
 name = "bpmn-schema"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 build = "build.rs"
 readme = "README.md"
@@ -8,9 +8,9 @@ keywords = ["bpmn"]
 license = "MIT"
 
 [dependencies]
-xsd-parser-types = { version = "0.1.2", default-features = false, features = ["xml", "num", "quick-xml"]}
+xsd-parser-types = { version = "0.1.2", default-features = false, features = [ "quick-xml" ] }
 num = "0.4"
 quick-xml = { version = "0.38" }
 
 [build-dependencies]
-xsd-parser = { version = "1.4", default-features = false, features = ["num"] }
+xsd-parser = { git = "https://github.com/Bergmann89/xsd-parser", branch = "bpmn", default-features = false }

@@ -5,37 +5,27 @@ use std::path::PathBuf;
 
 use xsd_parser::{
     Config, Error,
-    config::{GeneratorFlags, InterpreterFlags, OptimizerFlags, RenderStep, Schema},
+    config::{GeneratorFlags, InterpreterFlags, OptimizerFlags, Schema},
     generate,
-    pipeline::renderer::NamespaceSerialization,
 };
 
 fn main() -> Result<(), Error> {
     println!("cargo:rerun-if-changed=schema");
 
-    let mut config = Config::default();
-    config.parser.schemas = vec![Schema::File("schema/BPMN20.xsd".into())];
-    config.interpreter.flags = InterpreterFlags::all();
-    config.optimizer.flags = OptimizerFlags::all();
-    config.generator.flags = GeneratorFlags::all();
-    config.generator.type_postfix.type_ = "XType".into();
-    config.generator.type_postfix.element = String::new();
-    config.generator.type_postfix.element_type = "XElementType".into();
-
-    // Add renderers for `quick-xml` serializer and deserializer.
-    let config = config.with_render_steps([
-        RenderStep::Types,
-        RenderStep::Defaults,
-        RenderStep::NamespaceConstants,
-        RenderStep::PrefixConstants,
-        RenderStep::QuickXmlDeserialize {
-            boxed_deserializer: false,
-        },
-        RenderStep::QuickXmlSerialize {
-            namespaces: NamespaceSerialization::Global,
-            default_namespace: None,
-        },
-    ]);
+    let config = Config::default()
+        .with_schema(Schema::File("schema/BPMN20.xsd".into()))
+        .set_interpreter_flags(InterpreterFlags::all() - InterpreterFlags::WITH_NUM_BIG_INT)
+        .set_optimizer_flags(OptimizerFlags::all())
+        .set_generator_flags(GeneratorFlags::all())
+        .with_type_postfix("XType")
+        .with_quick_xml()
+        .with_generate([(
+            xsd_parser::IdentType::Element,
+            xsd_parser::config::NamespaceIdent::namespace(
+                b"http://www.omg.org/spec/BPMN/20100524/MODEL",
+            ),
+            "definitions",
+        )]);
 
     // Generate the code based on the configuration above.
     let code = generate(config)?;
