@@ -2,9 +2,9 @@ name: Rust CI + Docs
 
 on:
   push:
-    branches: ["develop"]
+    branches: ["main"]
   pull_request:
-    branches: ["develop"]
+    branches: ["main"]
   workflow_dispatch:
 permissions:
   contents: read

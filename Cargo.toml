@@ -1,11 +1,14 @@
 [package]
 name = "bpmn-schema"
+description = "A standard-compliant, low-level interface for parsing, representing, and manipulating BPMN (Business Process Model and Notation) documents in Rust"
 version = "0.3.0"
 edition = "2024"
 build = "build.rs"
 readme = "README.md"
 keywords = ["bpmn"]
 license = "MIT"
+documentation = "https://christopher22.github.io/bpmn-schema/bpmn_schema/"
+repository = "https://github.com/Christopher22/bpmn-schema/"
 
 [dependencies]
 xsd-parser-types = { version = "0.1.2", default-features = false, features = [ "quick-xml" ] }
